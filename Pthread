@@ -1,0 +1,60 @@
+#include <chrono> // Include the chrono library for time measurement
+#include <cstdlib> // Include the cstdlib library for memory allocation
+#include <iostream> // Include the iostream library for input/output operations
+#include <pthread.h> // Include the pthread library for multithreading support
+
+using namespace std::chrono; // Using chrono namespace for time-related operations
+using namespace std; // Using std namespace for standard library components
+
+struct ThreadData {
+    int *arr1;
+    int *arr2;
+    int *resArr;
+    int size;
+};
+
+void generateRandomArray(int array[], int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = rand() % 100; // Generate random values between 0 and 99
+    }
+}
+
+void *addArrays(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    for (int i = 0; i < data->size; i++) {
+        data->resArr[i] = data->arr1[i] + data->arr2[i]; // Perform element-wise addition
+    }
+    return NULL;
+}
+
+int main() {
+    unsigned long arraySize = 100000000; // Define the size of the arrays
+    srand(time(0)); // Seed the random number generator
+    int *array1, *array2, *resultArray; // Declare pointers for arrays
+    pthread_t thread; // Declare a pthread variable
+    ThreadData data; // Declare a struct to hold thread data
+    auto startTime = high_resolution_clock::now(); // Record the start time
+    array1 = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for array 1
+    array2 = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for array 2
+    resultArray = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for the result array
+    generateRandomArray(array1, arraySize); // Generate random values for array 1
+    generateRandomArray(array2, arraySize); // Generate random values for array 2
+
+    data.arr1 = array1; // Assign array 1 to thread data
+    data.arr2 = array2; // Assign array 2 to thread data
+    data.resArr = resultArray; // Assign result array to thread data
+    data.size = arraySize; // Assign array size to thread data
+
+    pthread_create(&thread, NULL, addArrays, (void *)&data); // Create a new thread for addition
+    pthread_join(thread, NULL); // Wait for the thread to finish
+
+    auto stopTime = high_resolution_clock::now(); // Record the stop time
+    auto executionTime = duration_cast<microseconds>(stopTime - startTime); // Calculate the execution time
+    cout << "Pthread Time: " << executionTime.count() << " microseconds" << endl; // Display the execution time
+
+    free(array1); // Free memory allocated for array 1
+    free(array2); // Free memory allocated for array 2
+    free(resultArray); // Free memory allocated for the result array
+
+    return 0; // Return 0 to indicate successful program execution
+}
