@@ -24,3 +24,17 @@ int main() {
     generateRandomArray(array2, arraySize); // Generate random values for array 2
 
     #pragma omp parallel for
+    for (int i = 0; i < arraySize; i++) {
+        resultArray[i] = array1[i] + array2[i]; // Perform element-wise addition
+    }
+
+    auto stopTime = high_resolution_clock::now(); // Record the stop time
+    auto executionTime = duration_cast<microseconds>(stopTime - startTime); // Calculate the execution time
+    cout << "OpenMP Time: " << executionTime.count() << " microseconds" << endl; // Display the execution time
+
+    free(array1); // Free memory allocated for array 1
+    free(array2); // Free memory allocated for array 2
+    free(resultArray); // Free memory allocated for the result array
+
+    return 0; // Return 0 to indicate successful program execution
+}
