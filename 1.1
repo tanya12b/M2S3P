@@ -1,0 +1,38 @@
+#include <chrono> // Include the chrono library for time measurement
+#include <cstdlib> // Include the cstdlib library for memory allocation
+#include <iostream> // Include the iostream library for input/output operations
+#include <omp.h> // Include the OpenMP library for parallel processing
+
+using namespace std::chrono; // Using chrono namespace for time-related operations
+using namespace std; // Using std namespace for standard library components
+
+// Function to generate random values for the vector
+void generateRandomVector(int arr[], int size) {
+  for (int i = 0; i < size; i++) {
+    arr[i] = rand() % 100; // Generate random values between 0 and 99
+  }
+}
+
+int main() {
+  unsigned long arrSize = 100000000; // Define the size of the arrays
+  srand(time(0)); // Seed the random number generator
+  int *vec1, *vec2, *resVec; // Declare pointers for vectors
+  auto startTime = high_resolution_clock::now(); // Record the start time
+  vec1 = (int *)malloc(arrSize * sizeof(int)); // Allocate memory for vector 1
+  vec2 = (int *)malloc(arrSize * sizeof(int)); // Allocate memory for vector 2
+  resVec = (int *)malloc(arrSize * sizeof(int)); // Allocate memory for the result vector
+  generateRandomVector(vec1, arrSize); // Generate random values for vector 1
+  generateRandomVector(vec2, arrSize); // Generate random values for vector 2
+
+  // Parallel addition of vectors using OpenMP
+  #pragma omp parallel for
+  for (int i = 0; i < arrSize; i++) {
+    resVec[i] = vec1[i] + vec2[i]; // Perform element-wise addition
+  }
+
+  auto stopTime = high_resolution_clock::now(); // Record the stop time
+  auto executionTime = duration_cast<microseconds>(stopTime - startTime); // Calculate the execution time
+  cout << "Execution Time: " << executionTime.count() << " microseconds" << endl; // Display the execution time
+
+  return 0; // Return 0 to indicate successful program execution
+}
