@@ -1,0 +1,42 @@
+#include <chrono> // Include the chrono library for time measurement
+#include <cstdlib> // Include the cstdlib library for memory allocation
+#include <iostream> // Include the iostream library for input/output operations
+
+using namespace std::chrono; // Using chrono namespace for time-related operations
+using namespace std; // Using std namespace for standard library components
+
+void generateRandomArray(int array[], int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = rand() % 100; // Generate random values between 0 and 99
+    }
+}
+
+void addArrays(int array1[], int array2[], int resultArray[], int size) {
+    for (int i = 0; i < size; i++) {
+        resultArray[i] = array1[i] + array2[i]; // Perform element-wise addition
+    }
+}
+
+int main() {
+    unsigned long arraySize = 100000000; // Define the size of the arrays
+    srand(time(0)); // Seed the random number generator
+    int *array1, *array2, *resultArray; // Declare pointers for arrays
+    auto startTime = high_resolution_clock::now(); // Record the start time
+    array1 = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for array 1
+    array2 = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for array 2
+    resultArray = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for the result array
+    generateRandomArray(array1, arraySize); // Generate random values for array 1
+    generateRandomArray(array2, arraySize); // Generate random values for array 2
+
+    addArrays(array1, array2, resultArray, arraySize); // Perform addition of arrays
+
+    auto stopTime = high_resolution_clock::now(); // Record the stop time
+    auto executionTime = duration_cast<microseconds>(stopTime - startTime); // Calculate the execution time
+    cout << "Sequential Time: " << executionTime.count() << " microseconds" << endl; // Display the execution time
+
+    free(array1); // Free memory allocated for array 1
+    free(array2); // Free memory allocated for array 2
+    free(resultArray); // Free memory allocated for the result array
+
+    return 0; // Return 0 to indicate successful program execution
+}
