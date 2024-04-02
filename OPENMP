@@ -1,0 +1,26 @@
+#include <chrono> // Include the chrono library for time measurement
+#include <cstdlib> // Include the cstdlib library for memory allocation
+#include <iostream> // Include the iostream library for input/output operations
+#include <omp.h> // Include the OpenMP library for parallel processing
+
+using namespace std::chrono; // Using chrono namespace for time-related operations
+using namespace std; // Using std namespace for standard library components
+
+void generateRandomArray(int array[], int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = rand() % 100; // Generate random values between 0 and 99
+    }
+}
+
+int main() {
+    unsigned long arraySize = 100000000; // Define the size of the arrays
+    srand(time(0)); // Seed the random number generator
+    int *array1, *array2, *resultArray; // Declare pointers for arrays
+    auto startTime = high_resolution_clock::now(); // Record the start time
+    array1 = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for array 1
+    array2 = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for array 2
+    resultArray = (int *)malloc(arraySize * sizeof(int)); // Allocate memory for the result array
+    generateRandomArray(array1, arraySize); // Generate random values for array 1
+    generateRandomArray(array2, arraySize); // Generate random values for array 2
+
+    #pragma omp parallel for
