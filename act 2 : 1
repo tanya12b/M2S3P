@@ -1,0 +1,31 @@
+#include <iostream>
+#include <vector>
+#include <omp.h>
+
+int main() {
+    // Create a vector v1 with some integer values
+    std::vector<int> my_vector = {1, 2, 3, 4, 5};
+    // Initialize the total sum to 0
+    int my_total = 0;
+
+    // Begin parallel region with default(none) attribute, indicating no default data sharing
+    #pragma omp parallel default(none) shared(my_vector, my_total)
+    {
+        // Initialize a local variable to store partial sum for each thread
+        int thread_partial_sum = 0;
+        // Parallel loop over elements of the vector
+        #pragma omp for
+        for (int i = 0; i < my_vector.size(); ++i) {
+            // Accumulate partial sum for each thread
+            thread_partial_sum += my_vector[i];
+        }
+        // Critical section to safely update the total sum
+        #pragma omp critical
+        my_total += thread_partial_sum;
+    }
+
+    // Print the total sum
+    std::cout << "Total sum using critical section: " << my_total << std::endl;
+
+    return 0;
+}
