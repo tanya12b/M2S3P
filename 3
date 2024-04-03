@@ -1,0 +1,24 @@
+#include <iostream>
+#include <vector>
+#include <omp.h>
+
+int main() {
+    // Create a vector containing integer values
+    std::vector<int> my_vector = {1, 2, 3, 4, 5};
+    // Initialize the total sum to 0
+    int my_total = 0;
+
+    // Begin parallel region with default(none) attribute, indicating no default data sharing
+    // Use reduction clause to perform parallel reduction operation on the total sum
+    #pragma omp parallel for default(none) shared(my_vector) reduction(+:my_total)
+    // Parallel loop to iterate over elements of the vector
+    for (int i = 0; i < my_vector.size(); ++i) {
+        // Accumulate the total sum using reduction operation
+        my_total += my_vector[i];
+    }
+
+    // Print the total sum
+    std::cout << "Total sum using reduction clause: " << my_total << std::endl;
+
+    return 0;
+}
