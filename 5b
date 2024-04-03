@@ -1,0 +1,24 @@
+#include <iostream>
+#include <omp.h>
+
+int main() {
+    // Initialize the total sum to 0
+    int my_total = 0;
+    // Define the size of the iteration space
+    const int my_size = 1000;
+
+    // Begin parallel region with default(none) attribute, indicating no default data sharing
+    // Use dynamic scheduling with a chunk size of 100
+    #pragma omp parallel for default(none) shared(my_total) schedule(dynamic, 100)
+    // Parallel loop to iterate over the iteration space
+    for (int i = 0; i < my_size; ++i) {
+        // Atomic update operation to avoid race conditions while updating the total sum
+        #pragma omp atomic update
+        my_total += i;
+    }
+
+    // Print the total sum
+    std::cout << "Total sum using dynamic scheduling: " << my_total << std::endl;
+
+    return 0;
+}
